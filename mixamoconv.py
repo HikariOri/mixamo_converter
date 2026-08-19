@@ -24,7 +24,8 @@ from pathlib import Path
 import re
 import logging
 import bpy
-from bpy_types import Object
+from bpy.types import Object
+from bpy_extras import anim_utils
 from math import pi
 from mathutils import Vector, Quaternion
 
@@ -134,6 +135,21 @@ def key_all_bones(armature, frame_range = (1, 2)):
         bpy.ops.anim.keyframe_insert_menu(type='BUILTIN_KSI_LocRot')
     bpy.ops.object.mode_set(mode='OBJECT')
 
+def get_action_fcurves(obj):
+    """Return the FCurves collection of the action assigned to *obj*.
+
+    Blender 5.x stores FCurves inside channel bags (slotted actions) rather
+    than directly on the Action. Returns None if there is no usable
+    action/channelbag.
+    """
+    anim_data = obj.animation_data
+    if anim_data is None or anim_data.action is None:
+        return None
+    channelbag = anim_utils.animdata_get_channelbag_for_assigned_slot(anim_data)
+    if channelbag is None:
+        return None
+    return channelbag.fcurves
+
 def apply_restoffset(armature, hipbone, restoffset):
     """function to apply restoffset to rig, should be used if rest-/bindpose does not stand on ground with feet"""
     # apply rest offset to restpose
@@ -147,8 +163,9 @@ def apply_restoffset(armature, hipbone, restoffset):
 
     # apply restoffset to animation of hip
     restoffset_local = (restoffset[0], restoffset[2], -restoffset[1])
+    fcurves = get_action_fcurves(armature)
     for axis in range(3):
-        fcurve = armature.animation_data.action.fcurves.find("pose.bones[\"" + hipbone.name + "\"].location", index=axis)
+        fcurve = fcurves.find("pose.bones[\"" + hipbone.name + "\"].location", index=axis)
         for pi in range(len(fcurve.keyframe_points)):
             fcurve.keyframe_points[pi].co.y -= restoffset_local[axis] / armature.scale.x
     return 1
@@ -170,7 +187,9 @@ def apply_kneefix(armature, offset, bonenames=['RightUpLeg', 'LeftUpLeg']):
 
 def get_all_quaternion_curves(object):
     """returns all quaternion fcurves of object/bones packed together in a touple per object/bone"""
-    fcurves = object.animation_data.action.fcurves
+    fcurves = get_action_fcurves(object)
+    if fcurves is None:
+        return
     if fcurves.find('rotation_quaternion'):
         yield (fcurves.find('rotation_quaternion', index=0), fcurves.find('rotation_quaternion', index=1), fcurves.find('rotation_quaternion', index=2), fcurves.find('rotation_quaternion', index=3))
     if object.type == 'ARMATURE':
@@ -250,10 +269,11 @@ def hip_to_root(armature, use_x=True, use_y=True, use_z=True, on_ground=True, us
 
     # Scale by ScaleFactor
     if scale != 1.0:
+        fcurves = get_action_fcurves(root)
         for i in range(3):
-            fcurve = root.animation_data.action.fcurves.find('scale', index=i)
+            fcurve = fcurves.find('scale', index=i)
             if fcurve != None:
-                root.animation_data.action.fcurves.remove(fcurve)
+                fcurves.remove(fcurve)
         root.scale *= scale
         yield Status("scaling")
 
@@ -371,7 +391,7 @@ def hip_to_root(armature, use_x=True, use_y=True, use_z=True, on_ground=True, us
     hipsbaker.select_set(False)
 
     bpy.ops.object.mode_set(mode='POSE')
-    hips.bone.select = True
+    hips.select = True
     root.data.bones.active = hips.bone
 
     c_hips_copy_loc = hips.constraints.new(type='COPY_LOCATION')

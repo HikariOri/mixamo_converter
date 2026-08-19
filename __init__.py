@@ -23,8 +23,8 @@
 bl_info = {
     "name": "Mixamo Converter",
     "author": "Enzio Probst",
-    "version": (1, 2, 3),
-    "blender": (2, 80, 0),
+    "version": (2, 0, 0),
+    "blender": (5, 2, 0),
     "location": "3D View > UI (Right Panel) > Mixamo Tab",
     "description": ("Script to bake Root motion for Mixamo Animations"),
     "warning": "",  # used for warning icon and text in addons panel
