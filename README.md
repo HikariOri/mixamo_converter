@@ -8,12 +8,25 @@ Blender 5.2 or newer needed to work.
 * Renames the bones in the skeleton to match the maniquine unreal skeleton
 
 ## Installation
-* first you have to get blender from https://www.blender.org/download/
-* Download Mixamo Converter repository as ZIP (no need to unpack it)
+* first you have to get blender from https://www.blender.org/download/ (5.2 or newer)
+* Download (or clone) the Mixamo Converter repository
+* Build the extension package from the repository root:
+
+  ```
+  blender --command extension build --source-dir . --output-dir ./dist
+  ```
+
+  This creates `dist/mixamo_converter-2.0.0.zip`.
 * Open up Blender
-* go to: Edit -> Preferences -> Addons -> Install from File...
-* select the ZIP you downloaded and click install from file
+* go to: Edit -> Preferences -> Addons -> Install from Disk... (top-right dropdown)
+* select the built ZIP and click install
 * now it should be in the list (search for mixamo) and you can enable it
+
+Alternatively, install from the command line:
+
+```
+blender --command extension install-file ./dist/mixamo_converter-2.0.0.zip --enable
+```
 
 ## Usage
 The Addon UI is located in the UI Region of the 3D view.
@@ -127,22 +140,8 @@ Remember the converter is now located in the Right Panel (UI) which can be opene
 If you wanna contribute to this project you can edit the project with PyCharm and run the changes straightway in Blender.
 To achieve this you have to:
 +  Download Pycharm community edition from [jetbrains.com](https://www.jetbrains.com/pycharm/download)
-+  Open blender
-+  open a text view, click + and paste there the code below 
-+  Replace /the/path/to/the/git/project with the path to github project in the below code
-+  Edit the changes in Pycharm
-+  Click "Run Script" in blender to reload the project with the new changes
-
-```python
-import bpy
-import os
-import sys
-
-git_path=r'/the/path/to/the/git/project'
-sys.path.insert(0, git_path)
-filename = os.path.join(git_path, '__init__.py')
-
-exec(compile(open(filename).read(), filename, 'exec'))
-```
++  Install the add-on as an extension (see Installation above)
++  In Blender, press F3 and run "Reload Scripts" to reload the add-on after editing, without restarting
++  Edit the changes in Pycharm and reload in Blender
 
 Happy Converting

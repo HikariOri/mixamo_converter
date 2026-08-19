@@ -20,25 +20,9 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 '''
 
-bl_info = {
-    "name": "Mixamo Converter",
-    "author": "Enzio Probst",
-    "version": (2, 0, 0),
-    "blender": (5, 2, 0),
-    "location": "3D View > UI (Right Panel) > Mixamo Tab",
-    "description": ("Script to bake Root motion for Mixamo Animations"),
-    "warning": "",  # used for warning icon and text in addons panel
-    "wiki_url": "https://github.com/enziop/mixamo_converter/wiki",
-    "tracker_url": "https://github.com/enziop/mixamo_converter/issues" ,
-    "category": "Animation"
-}
-
 import bpy
 
-try:
-    from . import mixamoconv
-except SystemError:
-    import mixamoconv
+from . import mixamoconv
 
 if "bpy" in locals():
     from importlib import reload

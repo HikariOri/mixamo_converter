@@ -1,0 +1,20 @@
+schema_version = "1.0.0"
+
+id = "mixamo_converter"
+version = "2.0.0"
+name = "Mixamo Converter"
+tagline = "Convert Mixamo animations for Blender and Unreal Engine"
+maintainer = "Jie Yao"
+type = "add-on"
+tags = ["Animation"]
+
+blender_version_min = "5.2.0"
+
+license = [
+  "SPDX:GPL-3.0-or-later",
+]
+
+website = "https://github.com/HikariOri/mixamo_converter"
+
+[permissions]
+files = "Import/export FBX files from/to disk"
